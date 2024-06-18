@@ -29,6 +29,7 @@ class DynamicLoader(private val context: Context) {
         }
 
         // Comment from 31-51 after first run
+
 //        ZipInputStream(inputStream).use { zis ->
 //            var entry: ZipEntry?
 //            while (zis.nextEntry.also { entry = it } != null) {
@@ -54,18 +55,17 @@ class DynamicLoader(private val context: Context) {
 
         val dexOutputDir = context.getDir("dex", Context.MODE_PRIVATE)
 //        val dexOutputDir = context.getDir("sdk1-release", Context.MODE_PRIVATE)
-        val fullPath = "$codeCacheDir/sdk1-release/"
+        val fullPath = "${codeCacheDir.absolutePath}"
         val data = Environment.getDataDirectory()
-        val classesPath = "$data/data/${context.packageName}/app_extracted_aar/sdk1-release/classes.jar"
 
-//        val dexFile = File(classesPath, "classes.jar")
-////        dexFile.setReadOnly()
-//        if (!dexFile.exists()) {
-//            Log.e("Loader", "File not found")
-//            throw IOException("classes.jar not found in the extracted AAR.")
-//        }
-        classLoader = DexClassLoader(classesPath, dexOutputDir.absolutePath, null, context.classLoader)
-        Log.i("Loader", "File path ${classesPath}")
+        val dexFile = File(fullPath, "classes.jar")
+//        dexFile.setReadOnly()
+        if (!dexFile.exists()) {
+            Log.e("Loader", "File not found")
+            throw IOException("classes.jar not found in the extracted AAR.")
+        }
+        classLoader = DexClassLoader(dexFile.absolutePath, dexOutputDir.absolutePath, null, context.classLoader)
+        Log.i("Loader", "Loading Classes path ${dexFile.absolutePath}")
         // Step 3: Load the resources
 //        try {
 //            val newAssetManager = AssetManager::class.java.newInstance()
